@@ -111,6 +111,17 @@
   .alert b { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
   .alert span { font-size: 13px; font-weight: 700; line-height: 1.35; }
 
+  /* Video */
+  .demo { display: grid; grid-template-columns: 1fr 360px; gap: 56px; align-items: center; }
+  .demo .section-head { margin-bottom: 0; }
+  .demo ul { margin: 20px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .demo li { display: flex; gap: 10px; align-items: center; color: var(--ink-2); font-weight: 600; }
+  .demo li .icon { color: var(--accent-text); font-size: 22px; }
+  .player { position: relative; width: 100%; max-width: 360px; aspect-ratio: 9 / 16; border-radius: var(--r-xl); overflow: hidden; background: var(--accent); box-shadow: var(--shadow-2); justify-self: center; }
+  .player video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .sound { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(11,13,18,.55); color: #fff; font: 800 13px Manrope, sans-serif; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .sound .icon { font-size: 18px; }
+
   /* Stories */
   .stories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .card { background: var(--surface); border-radius: var(--r-card); overflow: hidden; box-shadow: var(--shadow-1); display: flex; flex-direction: column; }
@@ -155,6 +166,7 @@
   @media (max-width: 880px) {
     .hero .wrap { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; }
     .steps, .stories { grid-template-columns: 1fr; }
+    .demo { grid-template-columns: 1fr; gap: 32px; }
     .features { grid-template-columns: 1fr; }
     .numbers { grid-template-columns: 1fr; padding: 28px; gap: 20px; }
     section { padding: 64px 0; }
@@ -226,6 +238,26 @@
           <h3>Find out why</h3>
           <p>Short, sourced stories in chapters: the fact, a timeline, the people, and the spot on an 1890s map.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap demo">
+      <div class="section-head">
+        <span class="caps">See it in action</span>
+        <h2 class="title">Filmed on a real walk around Clapham Common.</h2>
+        <p>Every shot is the app at work on the Common.</p>
+        <ul>
+          <li><span class="icon" aria-hidden="true">near_me</span>The nudge as you pass something remarkable</li>
+          <li><span class="icon" aria-hidden="true">menu_book</span>The story behind it, with a timeline</li>
+          <li><span class="icon" aria-hidden="true">map</span>The same spot on an 1890s map</li>
+          <li><span class="icon" aria-hidden="true">photo_camera</span>The camera, showing what’s in front of you</li>
+        </ul>
+      </div>
+      <div class="player">
+        <video src="teaser.mp4" poster="teaser.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Factmark in use on Clapham Common: an alert arrives, a story opens, a timeline, an 1890s map and the camera"></video>
+        <button class="sound" type="button" aria-pressed="false"><span class="icon" aria-hidden="true">volume_off</span><span>Sound on</span></button>
       </div>
     </div>
   </section>
@@ -362,6 +394,19 @@
       }
     });
   });
+  // Teaser: plays muted on a loop; the button turns sound on and restarts it. Respects reduced motion.
+  const video = document.querySelector('.player video');
+  const sound = document.querySelector('.sound');
+  if (video && sound) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { video.removeAttribute('autoplay'); video.pause(); }
+    sound.addEventListener('click', () => {
+      const on = video.muted;
+      video.muted = !on;
+      if (on) { video.currentTime = 0; video.play(); }
+      sound.setAttribute('aria-pressed', String(on));
+      sound.innerHTML = `<span class="icon" aria-hidden="true">${on ? 'volume_up' : 'volume_off'}</span><span>${on ? 'Sound off' : 'Sound on'}</span>`;
+    });
+  }
 </script>
 </body>
 </html>
